@@ -1,0 +1,1 @@
+/home/kevan/notes/rust-book-exercises/collections/employees/target/debug/employees-25a7cfd579b7472b: /home/kevan/notes/rust-book-exercises/collections/employees/src/lib.rs /home/kevan/notes/rust-book-exercises/collections/employees/src/main.rs
