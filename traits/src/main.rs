@@ -3,17 +3,19 @@ fn main() {
 
     let result = largest(&number_list);
     println!("The largest number is {}", result);
+    assert_eq!(100, *result);
 
     let char_list = vec!['y', 'm', 'a', 'q'];
 
     let result = largest(&char_list);
     println!("The largest char is {}", result);
+    assert_eq!('y', *result);
 }
 
-fn largest1<T: PartialOrd + Copy>(list: &[T]) -> T {
+pub fn largest1<T: PartialOrd + Copy>(list: &[T]) -> T {
     let mut largest = list[0];
 
-    for &item in list.iter() {
+    for &item in list {
         if item > largest {
             largest = item;
         }
@@ -22,19 +24,19 @@ fn largest1<T: PartialOrd + Copy>(list: &[T]) -> T {
     largest
 }
 
-fn largest2<T: PartialOrd + Clone>(list: &[T]) -> T {
-    let mut largest = list[0].clone();
+pub fn largest2<T: PartialOrd + Clone>(list: &[T]) -> T {
+    let mut largest = &list[0];
 
-    for item in list.iter().cloned() {
+    for item in list {
         if item > largest {
             largest = item;
         }
     }
 
-    largest
+    largest.clone()
 }
 
-fn largest<T: PartialOrd>(list: &[T]) -> &T {
+pub fn largest<T: PartialOrd>(list: &[T]) -> &T {
     let mut largest = &list[0];
 
     for item in list {
