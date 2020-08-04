@@ -8,31 +8,6 @@ pub struct DB {
     depts: HashMap<Dept, Vec<Empl>>,
 }
 
-/// Sorted by name.
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
-pub struct DeptSummary(Vec<Empl>);
-
-impl fmt::Display for DeptSummary {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for name in &self.0 {
-            writeln!(f, "{}", name)?;
-        }
-        Ok(())
-    }
-}
-
-/// Sorted by department name.
-pub struct CompanySummary(Vec<(Dept, DeptSummary)>);
-
-impl fmt::Display for CompanySummary {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for (name, dept) in &self.0 {
-            write!(f, "  {}:\n{}", name, dept)?;
-        }
-        Ok(())
-    }
-}
-
 impl DB {
     pub fn new() -> Self {
         Self {
@@ -60,6 +35,31 @@ impl DB {
         // Sort by dep't name.
         result.sort_unstable();
         CompanySummary(result)
+    }
+}
+
+/// All the employees in a department, sorted by name.
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
+pub struct DeptSummary(Vec<Empl>);
+
+impl fmt::Display for DeptSummary {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for name in &self.0 {
+            writeln!(f, "{}", name)?;
+        }
+        Ok(())
+    }
+}
+
+/// All the departments in a company, sorted by department name and employee name.
+pub struct CompanySummary(Vec<(Dept, DeptSummary)>);
+
+impl fmt::Display for CompanySummary {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for (name, dept) in &self.0 {
+            write!(f, "  {}:\n{}", name, dept)?;
+        }
+        Ok(())
     }
 }
 

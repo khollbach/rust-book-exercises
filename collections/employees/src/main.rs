@@ -13,18 +13,21 @@ fn main() -> Result<(), Box<dyn Error>> {
         io::stdin().read_line(&mut buf)?;
 
         use parser::Command::*;
-        match parser::parse_command(buf.trim())? {
-            Update {
+        match parser::parse_command(buf.trim()) {
+            Ok(Update {
                 department,
                 employee,
-            } => db.update(department, employee),
-            ListDept(dept) => {
+            }) => db.update(department, employee),
+            Ok(ListDept(dept)) => {
                 println!("{}", db.employees(dept));
             }
-            ListAll => {
-                println!("\n{}", db.all_employees());
+            Ok(ListAll) => {
+                println!("{}", db.all_employees());
             }
-            Quit => break,
+            Ok(Quit) => break,
+            Err(msg) => {
+                println!("{}", msg);
+            }
         }
     }
     Ok(())
