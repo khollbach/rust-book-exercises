@@ -39,7 +39,7 @@ impl DB {
 }
 
 /// All the employees in a department, sorted by name.
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct DeptSummary(Vec<Empl>);
 
 impl fmt::Display for DeptSummary {
@@ -52,6 +52,7 @@ impl fmt::Display for DeptSummary {
 }
 
 /// All the departments in a company, sorted by department name and employee name.
+#[derive(Debug, PartialEq, Eq)]
 pub struct CompanySummary(Vec<(Dept, DeptSummary)>);
 
 impl fmt::Display for CompanySummary {
@@ -72,9 +73,9 @@ mod test {
     fn smoke() {
         let mut db = DB::new();
         db.update("sales", "amir");
-        assert_eq!(vec!["amir".to_string()], db.employees("sales"));
+        assert_eq!(DeptSummary(vec!["amir".to_string()]), db.employees("sales"));
         assert_eq!(
-            vec![("sales".into(), vec!["amir".into()])],
+            CompanySummary(vec![("sales".into(), DeptSummary(vec!["amir".into()]))]),
             db.all_employees()
         );
     }
@@ -87,14 +88,17 @@ mod test {
         db.update("sales", "amir");
         db.update("marketing", "amir");
         assert_eq!(
-            vec!["amir".to_string(), "joseph".to_string()],
+            DeptSummary(vec!["amir".to_string(), "joseph".to_string()]),
             db.employees("sales")
         );
         assert_eq!(
-            vec![
-                ("marketing".into(), vec!["amir".into()]),
-                ("sales".into(), vec!["amir".into(), "joseph".into()])
-            ],
+            CompanySummary(vec![
+                ("marketing".into(), DeptSummary(vec!["amir".into()])),
+                (
+                    "sales".into(),
+                    DeptSummary(vec!["amir".into(), "joseph".into()])
+                )
+            ]),
             db.all_employees()
         );
     }
