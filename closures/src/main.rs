@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
 
@@ -35,14 +36,13 @@ use std::hash::Hash;
 
 pub struct Cacher<F, A, B> {
     f: F,
-    cache: HashMap<A, B>,
+    cache: HashMap<Rc<A>, B>,
 }
 
 impl<F, A, B> Cacher<F, A, B>
 where
-    F: Fn(&A) -> B,
-    A: Eq + Hash,
-    A: Clone, // todo this shouldn't be necessary..
+    F: FnMut(&A) -> B,
+    A: Hash + Eq,
 {
     pub fn new(f: F) -> Self {
         Self {
@@ -51,16 +51,16 @@ where
         }
     }
 
-    // todo how would I write this fn so that I don't have to clone a?
-    // I should conceptually be able to give ownership of a and b to the
-    // map while simultaneously borrowing b back from the map. But it's
-    // not obvious whether this is possible, because to borrow b from the
-    // map I still need a reference to a for the lookup.
     pub fn get(&mut self, a: A) -> &B {
-        if !self.cache.contains_key(&a) {
-            let b = (self.f)(&a);
-            self.cache.insert(a.clone(), b);
+        if self.cache.contains_key(&a) {
+            return self.cache.get(&a).unwrap();
         }
+
+        let b = (self.f)(&a);
+
+        // Insert (a, b) into the map.
+        let a = Rc::new(a);
+        self.cache.insert(Rc::clone(&a), b);
 
         self.cache.get(&a).unwrap()
     }
@@ -79,18 +79,4 @@ mod test {
 
         assert_eq!(*v2, 2);
     }
-
-    // todo: is it possible to use this cacher with
-    // something like substr(&a) -> &b ???
-    //#[test]
-    //fn substr() {
-    //fn substr(s: &String) -> &str {
-    //&s[..1]
-    //}
-    //let s = "abc".to_string();
-
-    //let mut c = Cacher::new(substr);
-    //let x: &str = c.get(s);
-    //assert_eq!(x, "a");
-    //}
 }
