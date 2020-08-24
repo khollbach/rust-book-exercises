@@ -10,7 +10,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 // Steps:
 // 1. If the length of the provided string is 0, then return an error
 // 2. Split the given string on the commas present in it
@@ -20,8 +19,26 @@ struct Person {
 // Otherwise, then return a Result of a Person object
 impl FromStr for Person {
     type Err = String;
-    fn from_str(s: &str) -> Result<Person, Self::Err> {
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match from_str_helper(s) {
+            Ok(p) => Ok(p),
+            Err(e) => Err(e.to_string()),
+        }
     }
+}
+
+fn from_str_helper(s: &str) -> Result<Person, Box<dyn std::error::Error>> {
+    let mut words = s.split(',');
+    let name = String::from(words.next().unwrap());
+    let age: usize = match words.next() {
+        Some(w) => w.parse()?,
+        None => return Err("No comma.".into()),
+    };
+    if words.next().is_some() {
+        return Err("Too many commas.".into());
+    }
+    Ok(Person { name, age })
 }
 
 fn main() {

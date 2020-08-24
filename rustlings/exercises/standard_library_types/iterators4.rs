@@ -1,7 +1,5 @@
 // iterators4.rs
 
-// I AM NOT DONE
-
 pub fn factorial(num: u64) -> u64 {
     // Complete this function to return factorial of num
     // Do not use:
@@ -12,6 +10,25 @@ pub fn factorial(num: u64) -> u64 {
     // For the most fun don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+
+    //let mut f = 1;
+    //for i in 1..=num {
+    //f *= i;
+    //}
+    //f
+
+    //match num {
+    //0 => 1,
+    //_ => num * factorial(num - 1),
+    //}
+
+    //if num == 0 {
+    //1
+    //} else {
+    //num * factorial(num - 1)
+    //}
+
+    (1..=num).product()
 }
 
 #[cfg(test)]
