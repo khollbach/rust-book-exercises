@@ -34,6 +34,7 @@ fn generate_workout(intensity: u32, random_number: u32) {
 use std::collections::HashMap;
 use std::hash::Hash;
 
+/// todo: It feels like I shouldn't need the Rc here.
 pub struct Cacher<F, A, B> {
     f: F,
     cache: HashMap<Rc<A>, B>,
@@ -51,9 +52,12 @@ where
         }
     }
 
+    /// Return f(a). Caches computations so that f is called at most once per value of a.
+    ///
+    /// todo: It feels like we're doing more lookups than we have to.
     pub fn get(&mut self, a: A) -> &B {
         if self.cache.contains_key(&a) {
-            return self.cache.get(&a).unwrap();
+            return &self.cache[&a];
         }
 
         let b = (self.f)(&a);
@@ -62,7 +66,7 @@ where
         let a = Rc::new(a);
         self.cache.insert(Rc::clone(&a), b);
 
-        self.cache.get(&a).unwrap()
+        &self.cache[&a]
     }
 }
 
